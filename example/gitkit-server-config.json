@@ -1,0 +1,7 @@
+{
+  "clientId" : "oauth2-client-id-at-Google-Developer-Console",
+  "serviceAccountEmail" : "service-account-email-at-Google-Developer-Console",
+  "serviceAccountPrivateKeyFile" : "service-account-private-key-from-Google-Developer-Console.p12",
+  "widgetUrl" : "/gitkit",
+  "cookieName" : "gtoken"
+}
