@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Client library for Google Identity Toolkit APIs",
   "keywords": ["gitkit"],
-  "homepage": "http://go/gitkitv3",
+  "homepage": "https://developers.google.com/identity-toolkit/v3/",
   "license": "Apache-2.0",
   "repositories": [
     {
