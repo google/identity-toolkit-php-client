@@ -1,5 +1,5 @@
 {
-  "name": "google/identity-toolkit-client",
+  "name": "google/identity-toolkit-php-client",
   "type": "library",
   "version": "1.0.0",
   "description": "Client library for Google Identity Toolkit APIs",
