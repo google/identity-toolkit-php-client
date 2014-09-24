@@ -1,5 +1,5 @@
 {
-  "name": "gitkit/apiclient",
+  "name": "google/identity-toolkit-client",
   "type": "library",
   "version": "1.0.0",
   "description": "Client library for Google Identity Toolkit APIs",
