@@ -258,7 +258,6 @@ class Gitkit_Client {
   /**
    * Gets out-of-band results for ResetPassword, ChangeEmail operations etc.
    *
-   * @param null|string $full_url url of the current page
    * @param null|array $param http post body
    * @param null|string $user_ip end user IP address
    * @param null|string $gitkit_token Gitkit token in the request
@@ -271,7 +270,7 @@ class Gitkit_Client {
    *   'response_body' => http response to be sent back to Gitkit widget
    * )
    */
-  public function getOobResults($full_url = null, $param = null,
+  public function getOobResults($param = null,
       $user_ip = null, $gitkit_token = null) {
     if (!$param) {
       $param = $_POST;
@@ -285,7 +284,7 @@ class Gitkit_Client {
     if (isset($param['action'])) {
       try {
         if ($param['action'] == 'resetPassword') {
-          $oob_link = $this->buildOobLink($full_url,
+          $oob_link = $this->buildOobLink(
               $this->passwordResetRequest($param, $user_ip),
               $param['action']);
           return $this->passwordResetResponse($oob_link, $param);
@@ -293,7 +292,7 @@ class Gitkit_Client {
           if (!$gitkit_token) {
             return $this->failureOobMsg('login is required');
           }
-          $oob_link = $this->buildOobLink($full_url,
+          $oob_link = $this->buildOobLink(
               $this->changeEmailRequest($param, $user_ip, $gitkit_token),
               $param['action']);
           return $this->emailChangeResponse($oob_link, $param);
@@ -338,33 +337,14 @@ class Gitkit_Client {
   /**
    * Builds the url of out-of-band confirmation.
    *
-   * @param string|null $full_url current page url
    * @param array $param oob request param
    * @param string $action 'RESET_PASSWORD' or 'CHANGE_EMAIL'
    * @return string the oob url
    */
-  private function buildOobLink($full_url, $param, $action) {
+  private function buildOobLink($param, $action) {
     $code = $this->rpcHelper->getOobCode($param);
-    if ($full_url) {
-      $parsed = parse_url($full_url);
-      $oobPageUrl = $parsed['scheme'] . '://' . $parsed['host'];
-      if (isset($parsed['port'])) {
-        $oobPageUrl .= ':' . $parsed['port'];
-      }
-    } else {
-      $oobPageUrl = 'http';
-      $defaultPort = '80';
-      if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
-        $oobPageUrl = 'https';
-        $defaultPort = '443';
-      }
-      $oobPageUrl .= '://' . $_SERVER['SERVER_NAME'];
-      $port = $_SERVER['SERVER_PORT'];
-      if ($port != $defaultPort) {
-        $oobPageUrl .= ':' . $port;
-      }
-    }
-    return $oobPageUrl . $this->widgetUrl . '?' .
+    $separator = parse_url($this->widgetUrl, PHP_URL_QUERY) ? '&' : '?';
+    return $this->widgetUrl . $separator  .
         http_build_query(array('mode' => $action, 'oobCode' => $code));
   }
 
