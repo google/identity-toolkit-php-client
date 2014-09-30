@@ -25,7 +25,7 @@ class GitkitClientTest extends PHPUnit_Framework_TestCase {
   public function setUp() {
     $this->config = array(
       'clientId' => '924226504183.apps.googleusercontent.com',
-      'widgetUrl' => '/widget'
+      'widgetUrl' => 'http://example.com/widget'
     );
     $this->rpcStubBuilder = $this->getMockBuilder('Gitkit_RpcHelper')
       ->disableOriginalConstructor();
@@ -102,8 +102,7 @@ class GitkitClientTest extends PHPUnit_Framework_TestCase {
         'challenge' => 'what is the number',
         'response' => '100');
 
-    $oobResult = $gitkitClient->getOobResults('http://example.com/oob',
-        $oobReq, '1.1.1.1');
+    $oobResult = $gitkitClient->getOobResults($oobReq, '1.1.1.1');
 
     $this->assertEquals($oobReq['email'], $oobResult['email']);
     $this->assertEquals('RESET_PASSWORD', $oobResult['action']);
