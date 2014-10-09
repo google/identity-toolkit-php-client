@@ -5,7 +5,7 @@
   "dist": {
         "url": "https://github.com/google/identity-toolkit-php-client/archive/1.0.0.zip",
         "type": "zip"
-    }
+  },
   "description": "Client library for Google Identity Toolkit APIs",
   "keywords": ["gitkit"],
   "homepage": "https://developers.google.com/identity-toolkit/v3/",
