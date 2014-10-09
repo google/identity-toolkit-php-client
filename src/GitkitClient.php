@@ -231,11 +231,14 @@ class Gitkit_Client {
    *                              supported names.
    * @param string $hashKey raw key for the algorithm
    * @param array $accounts array of Gitkit_Account to be uploaded
+   * @param null|int $rounds Rounds of the hash function
+   * @param null|int $memoryCost Memory cost of the hash function
    * @throws Gitkit_ServerException if error happens
    */
-  public function uploadUsers($hashAlgorithm, $hashKey, $accounts) {
+  public function uploadUsers($hashAlgorithm, $hashKey, $accounts,
+      $rounds = null, $memoryCost = null) {
     $this->rpcHelper->uploadAccount($hashAlgorithm, $hashKey,
-        $this->toJsonRequest($accounts));
+        $this->toJsonRequest($accounts), $rounds, $memoryCost);
   }
 
   /**
