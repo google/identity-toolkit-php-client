@@ -130,13 +130,22 @@ class Gitkit_RpcHelper {
    *                              supported names.
    * @param string $hashKey raw key for the algorithm
    * @param array $accounts array of account info to be uploaded
+   * @param null|int $rounds Rounds of the hash function
+   * @param null|int $memoryCost Memory cost of the hash function
    */
-  public function uploadAccount($hashAlgorithm, $hashKey, $accounts) {
+  public function uploadAccount($hashAlgorithm, $hashKey, $accounts,
+      $rounds, $memoryCost) {
     $data = array(
       'hashAlgorithm' => $hashAlgorithm,
       'signerKey' => Google_Utils::urlSafeB64Encode($hashKey),
       'users' => $accounts
     );
+    if ($rounds) {
+      $data['rounds'] = $rounds;
+    }
+    if ($memoryCost) {
+      $data['memoryCost'] = $memoryCost;
+    }
     $this->invokeGitkitApiWithServiceAccount('uploadAccount', $data);
   }
 
