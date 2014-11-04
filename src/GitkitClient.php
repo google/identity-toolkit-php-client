@@ -25,7 +25,7 @@ require_once 'DownloadIterator.php';
 class Gitkit_Client {
   private static $GITKIT_API_BASE =
       'https://www.googleapis.com/identitytoolkit/v3/relyingparty/';
-  private static $GTIKIT_TOKEN_ISSUER = 'https://gitkit.google.com/';
+  private static $GTIKIT_TOKEN_ISSUER = 'https://identitytoolkit.google.com/';
   private static $DEFAULT_COOKIE_NAME = 'gtoken';
   private $oauth2Client;
   private $clientId;
