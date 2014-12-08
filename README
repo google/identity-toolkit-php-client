@@ -5,8 +5,7 @@ Sample usage
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-$jsonConfig = json_decode(file_get_contents("gitkit-server-config.json"), true);
-$gitkitClient = new Gitkit_Client($jsonConfig);
+$gitkitClient = Gitkit_Client::createFromFile("gitkit-server-config.json");
 
 // ---- upload account -----
 $hashKey = "\x01\x02\x03";
