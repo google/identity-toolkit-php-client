@@ -18,7 +18,7 @@
 /**
  * Holder of a Gitkit user account.
  */
-class Gitkit_Account extends Google_Model {
+class Gitkit_Account {
   private $localId;
   private $email;
   private $providerId;
