@@ -308,6 +308,20 @@ class Gitkit_Client {
   }
 
   /**
+   * Gets verification url to verify user's email.
+   *
+   * @param string $email user's email to be verified
+   * @return string url for user click to verify the email
+   */
+  public function getEmailVerificationLink($email) {
+    $param = array(
+      'email' => $email,
+      'requestType' => 'VERIFY_EMAIL'
+    );
+    return $this->buildOobLink($param, 'verifyEmail');
+  }
+
+  /**
    * Gets Gitkit public certs.
    *
    * @return array certs in the format of {keyId => cert}.
