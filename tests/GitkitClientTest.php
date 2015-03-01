@@ -111,6 +111,21 @@ class GitkitClientTest extends PHPUnit_Framework_TestCase {
         $oobResult['oobLink']);
   }
 
+  public function testGetEmailVerificationLink() {
+    $rpcStub = $this->rpcStubBuilder->setMethods(array('getOobCode'))
+        ->getMock();
+    $rpcStub->expects($this->any())
+        ->method('getOobCode')
+        ->will($this->returnValue('oob-code'));
+    $gitkitClient = Gitkit_Client::createFromConfig($this->config, $rpcStub);
+
+    $verifyLink = $gitkitClient->getEmailVerificationLink('user@example.com');
+
+    $this->assertEquals(
+        'http://example.com/widget?mode=verifyEmail&oobCode=oob-code',
+        $verifyLink);
+  }
+
   public function testOobWithException() {
     $rpcStub = $this->rpcStubBuilder->setMethods(array('getOobCode'))
         ->getMock();

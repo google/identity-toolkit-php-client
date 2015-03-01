@@ -17,6 +17,9 @@ $user = $gitkitClient->validateToken("eyJhb...");
 // ---- get account info by user identifier ----
 $user = $gitkitClient->getUserById("1234");
 
+// ---- get a url to send to user's email address to verify ownership -----
+$verificationLink = $gitkitClient->getEmailVerificationLink("1234@example.com");
+
 // ---- download account ----
 $iterator = $gitkitClient->getAllUsers(3);
 while ($iterator->valid()) {
