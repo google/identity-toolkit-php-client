@@ -99,7 +99,7 @@ class Gitkit_RpcHelper {
   /**
    * Invokes the SetAccountInfo API.
    *
-   * @param array $gitkitAccount account info to be updated
+   * @param Gitkit_Account $gitkitAccount account info to be updated
    * @return array updated account info
    */
   public function updateAccount($gitkitAccount) {
