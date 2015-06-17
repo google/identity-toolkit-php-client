@@ -1,33 +1,14 @@
 {
   "name": "google/identity-toolkit-php-client",
   "type": "library",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Client library for Google Identity Toolkit APIs",
   "keywords": ["gitkit"],
-  "homepage": "https://developers.google.com/identity-toolkit/v3/",
+  "homepage": "https://developers.google.com/identity-toolkit/",
   "license": "Apache-2.0",
-  "repositories": [
-    {
-      "type": "package",
-      "package": {
-        "name": "google/apiclient",
-        "version": "1.0.0",
-        "source": {
-          "url": "https://github.com/google/google-api-php-client.git",
-          "type": "git",
-          "reference": "master"
-        },
-        "autoload": {
-          "classmap": [
-            "src/"
-          ]
-        }
-      }
-    }
-  ],
   "require": {
     "php": ">=5.2.1",
-    "google/apiclient": "1.0.*"
+    "google/apiclient": "~1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "4.1.*"
