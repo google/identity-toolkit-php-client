@@ -15,6 +15,10 @@
  * limitations under the License.
  */
 
+use ArrayObject;
+use EmptyIterator;
+use NoRewindIterator;
+
 /**
  * Iterator for paginated DownloadAccount response.
  */

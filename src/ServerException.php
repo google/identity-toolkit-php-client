@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+use Exception;
+
 /**
  * Exception due to Gitkit server error.
  */
