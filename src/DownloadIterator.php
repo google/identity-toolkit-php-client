@@ -1,4 +1,4 @@
-<?php
+<?php namespace Gitkit;
 /*
  * Copyright 2014 Google Inc.
  *
@@ -15,13 +15,10 @@
  * limitations under the License.
  */
 
-require_once 'GitkitClient.php';
-require_once 'RpcHelper.php';
-
 /**
  * Iterator for paginated DownloadAccount response.
  */
-class Gitkit_DownloadIterator {
+class DownloadIterator {
 
   private $nextPageToken;
   private $iterator;
@@ -47,15 +44,15 @@ class Gitkit_DownloadIterator {
     if ($this->iterator->valid()) {
       $this->iterator->next();
     } else {
-      throw new Gitkit_ClientException("invalid download account iterator");
+      throw new ClientException("invalid download account iterator");
     }
   }
 
   public function current() {
     if ($this->iterator->valid()) {
-      return new Gitkit_Account($this->iterator->current());
+      return new Account($this->iterator->current());
     } else {
-      throw new Gitkit_ClientException("invalid download account iterator");
+      throw new ClientException("invalid download account iterator");
     }
   }
 

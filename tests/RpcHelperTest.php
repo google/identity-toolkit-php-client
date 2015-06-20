@@ -21,7 +21,7 @@ class RpcHelperTest extends PHPUnit_Framework_TestCase {
 
   private $rpcHelper;
   public function setUp() {
-    $this->rpcHelper = new Gitkit_RpcHelper(
+    $this->rpcHelper = new Gitkit\RpcHelper(
         'service-email',
         'TestKey.p12',
         'api-url',
@@ -37,7 +37,7 @@ class RpcHelperTest extends PHPUnit_Framework_TestCase {
             'message' => $errorMessage));
     try {
       $this->rpcHelper->checkGitkitError($clientErrorResponse);
-    } catch (Gitkit_ClientException $e) {
+    } catch (Gitkit\ClientException $e) {
       $this->assertEquals($errorMessage, $e->getMessage());
     }
   }
@@ -50,7 +50,7 @@ class RpcHelperTest extends PHPUnit_Framework_TestCase {
         'message' => $errorMessage));
     try {
       $this->rpcHelper->checkGitkitError($clientErrorResponse);
-    } catch (Gitkit_ServerException $e) {
+    } catch (Gitkit\ServerException $e) {
       $this->assertEquals($errorMessage, $e->getMessage());
     }
   }

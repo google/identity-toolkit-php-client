@@ -1,4 +1,4 @@
-<?php
+<?php namespace Gitkit;
 /*
  * Copyright 2014 Google Inc.
  *
@@ -18,5 +18,5 @@
 /**
  * Exception due to client invalid request.
  */
-class Gitkit_ClientException extends Exception {
+class ClientException extends Exception {
 }

@@ -39,7 +39,7 @@ class GitkitClientTest extends PHPUnit_Framework_TestCase {
         ->method('getGitkitCerts')
         ->will($this->returnValue(TestData::getCerts()));
 
-    $gitkitClient = Gitkit_Client::createFromConfig($this->config, $rpcStub);
+    $gitkitClient = Gitkit\Client::createFromConfig($this->config, $rpcStub);
     $user = $gitkitClient->validateToken(TestData::getToken());
     $this->assertNotNull($user);
   }
@@ -61,7 +61,7 @@ class GitkitClientTest extends PHPUnit_Framework_TestCase {
             array($this->equalTo('page2_token'), $this->equalTo(10)))
         ->will($this->onConsecutiveCalls($page1, $page2));
 
-    $gitkitClient = Gitkit_Client::createFromConfig($this->config, $rpcStub);
+    $gitkitClient = Gitkit\Client::createFromConfig($this->config, $rpcStub);
     $iterator = $gitkitClient->getAllUsers(10);
     $index = 0;
     while ($iterator->valid()) {
@@ -83,7 +83,7 @@ class GitkitClientTest extends PHPUnit_Framework_TestCase {
         ->method('getAccountInfoByEmail')
         ->with($testUser['email'])
         ->will($this->returnValue($testUser));
-    $gitkitClient = Gitkit_Client::createFromConfig($this->config, $rpcStub);
+    $gitkitClient = Gitkit\Client::createFromConfig($this->config, $rpcStub);
     $this->assertEquals(
         $testUser['localId'],
         $gitkitClient->getUserByEmail($testUser['email'])->getUserId());
@@ -95,7 +95,7 @@ class GitkitClientTest extends PHPUnit_Framework_TestCase {
     $rpcStub->expects($this->any())
         ->method('getOobCode')
         ->will($this->returnValue('oob-code'));
-    $gitkitClient = Gitkit_Client::createFromConfig($this->config, $rpcStub);
+    $gitkitClient = Gitkit\Client::createFromConfig($this->config, $rpcStub);
     $oobReq = array(
         'action' => 'resetPassword',
         'email' => 'user@example.com',
@@ -117,7 +117,7 @@ class GitkitClientTest extends PHPUnit_Framework_TestCase {
     $rpcStub->expects($this->any())
         ->method('getOobCode')
         ->will($this->returnValue('oob-code'));
-    $gitkitClient = Gitkit_Client::createFromConfig($this->config, $rpcStub);
+    $gitkitClient = Gitkit\Client::createFromConfig($this->config, $rpcStub);
 
     $verifyLink = $gitkitClient->getEmailVerificationLink('user@example.com');
 
@@ -131,8 +131,8 @@ class GitkitClientTest extends PHPUnit_Framework_TestCase {
         ->getMock();
     $rpcStub->expects($this->any())
         ->method('getOobCode')
-        ->will($this->throwException(new Gitkit_ClientException('error-msg')));
-    $gitkitClient = Gitkit_Client::createFromConfig($this->config, $rpcStub);
+        ->will($this->throwException(new Gitkit\ClientException('error-msg')));
+    $gitkitClient = Gitkit\Client::createFromConfig($this->config, $rpcStub);
     $oobReq = array(
         'action' => 'resetPassword',
         'email' => 'user@example.com',
@@ -142,7 +142,7 @@ class GitkitClientTest extends PHPUnit_Framework_TestCase {
     try {
       $gitkitClient->getOobResults('http://example.com/oob',
           $oobReq, '1.1.1.1');
-    } catch (Gitkit_ClientException $e) {
+    } catch (Gitkit\ClientException $e) {
       $this->assertEquals('error-msg', $e->getMessage());
     }
   }

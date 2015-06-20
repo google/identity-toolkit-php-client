@@ -1,4 +1,4 @@
-<?php
+<?php namespace Gitkit;
 /*
  * Copyright 2014 Google Inc.
  *
@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-require_once 'RpcHelper.php';
-require_once 'DownloadIterator.php';
+use Google_Utils;
+use Google_Client;
+use Google_Auth_OAuth2;
 
 /**
  * Google Identity Toolkit PHP client library.
  * https://developers.google.com/identity-toolkit/v3/‎
  */
-class Gitkit_Client {
+class Client {
   private static $GITKIT_API_BASE =
       'https://www.googleapis.com/identitytoolkit/v3/relyingparty/';
   private static $GTIKIT_TOKEN_ISSUER = 'https://identitytoolkit.google.com/';
@@ -70,10 +71,10 @@ class Gitkit_Client {
    */
   public static function createFromConfig($config, $rpcHelper = null) {
     if (!isset($config['clientId'])) {
-      throw new Gitkit_ClientException("\"clientId\" should be configured");
+      throw new ClientException("\"clientId\" should be configured");
     }
     if (!isset($config['widgetUrl'])) {
-      throw new Gitkit_ClientException("\"widgetUrl\" should be configured");
+      throw new ClientException("\"widgetUrl\" should be configured");
     }
     if (isset($config["cookieName"])) {
       $cookieName = $config['cookieName'];
@@ -82,16 +83,16 @@ class Gitkit_Client {
     }
     if (!$rpcHelper) {
       if (!isset($config['serviceAccountEmail'])) {
-        throw new Gitkit_ClientException(
+        throw new ClientException(
             "\"serviceAccountEmail\" should be configured");
       }
       if (!isset($config['serviceAccountPrivateKeyFile'])) {
-        throw new Gitkit_ClientException(
+        throw new ClientException(
             "\"serviceAccountPrivateKeyFile\" should be configured");
       }
       $p12Key = file_get_contents($config["serviceAccountPrivateKeyFile"]);
       if ($p12Key === false) {
-        throw new Gitkit_ClientException(
+        throw new ClientException(
             "Can not read file " . $config["serviceAccountPrivateKeyFile"]);
       }
       if (isset($config['serverApiKey'])) {
@@ -99,14 +100,14 @@ class Gitkit_Client {
       } else {
         $serverApiKey = null;
       }
-      $rpcHelper = new Gitkit_RpcHelper(
+      $rpcHelper = new RpcHelper(
           $config["serviceAccountEmail"],
           $p12Key,
           self::$GITKIT_API_BASE,
           new Google_Auth_OAuth2(new Google_Client()),
           $serverApiKey);
     }
-    return new Gitkit_Client($config['clientId'], $config['widgetUrl'],
+    return new Client($config['clientId'], $config['widgetUrl'],
         $cookieName, $rpcHelper);
   }
 
@@ -127,7 +128,7 @@ class Gitkit_Client {
           180 * 86400)->getAttributes();
       $jwt = $loginTicket["payload"];
       if ($jwt) {
-        $user = new Gitkit_Account();
+        $user = new Account();
         $user->setUserId($jwt["user_id"]);
         $user->setEmail($jwt["email"]);
         if (isset($jwt["provider_id"])) {
@@ -191,7 +192,7 @@ class Gitkit_Client {
    * @return Gitkit_Account user account info
    */
   public function getUserByEmail($email) {
-    return new Gitkit_Account($this->rpcHelper->getAccountInfoByEmail($email));
+    return new Account($this->rpcHelper->getAccountInfoByEmail($email));
   }
 
   /**
@@ -201,7 +202,7 @@ class Gitkit_Client {
    * @return Gitkit_Account user account info
    */
   public function getUserById($id) {
-    return new Gitkit_Account($this->rpcHelper->getAccountInfoById($id));
+    return new Account($this->rpcHelper->getAccountInfoById($id));
   }
 
   /**
@@ -255,7 +256,7 @@ class Gitkit_Client {
    * @return Gitkit_DownloadIterator iterator to fetch all user accounts
    */
   public function getAllUsers($maxResults = null) {
-    return new Gitkit_DownloadIterator($this->rpcHelper, $maxResults);
+    return new DownloadIterator($this->rpcHelper, $maxResults);
   }
 
   /**
@@ -300,7 +301,7 @@ class Gitkit_Client {
               $param['action']);
           return $this->emailChangeResponse($oob_link, $param);
         }
-      } catch (Gitkit_ClientException $error) {
+      } catch (ClientException $error) {
         return $this->failureOobMsg($error->getMessage());
       }
     }
