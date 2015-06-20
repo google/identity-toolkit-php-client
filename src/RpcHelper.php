@@ -1,4 +1,4 @@
-<?php
+<?php namespace Gitkit;
 /*
  * Copyright 2014 Google Inc.
  *
@@ -15,10 +15,14 @@
  * limitations under the License.
  */
 
+use Google_Utils;
+use Google_Http_Request;
+use Google_Auth_AssertionCredentials;
+
 /**
  * Helper for Gitkit RPCs.
  */
-class Gitkit_RpcHelper {
+class RpcHelper {
 
   private static $GITKIT_SCOPE =
       'https://www.googleapis.com/auth/identitytoolkit';
@@ -179,7 +183,7 @@ class Gitkit_RpcHelper {
     if (isset($response['oobCode'])) {
       return $response['oobCode'];
     } else {
-      throw new Gitkit_ClientException("can not get oob-code");
+      throw new ClientException("can not get oob-code");
     }
   }
 
@@ -219,13 +223,13 @@ class Gitkit_RpcHelper {
     if (isset($response['error'])) {
       $error = $response['error'];
       if (!isset($error['code'])) {
-        throw new Gitkit_ServerException('null error code from Gitkit server');
+        throw new ServerException('null error code from Gitkit server');
       } else {
         $code = $error['code'];
         if (strpos($code, '4') === 0) {
-          throw new Gitkit_ClientException($error['message']);
+          throw new ClientException($error['message']);
         } else {
-          throw new Gitkit_ServerException($error['message']);
+          throw new ServerException($error['message']);
         }
       }
     } else {

@@ -1,4 +1,4 @@
-<?php
+<?php namespace Gitkit;
 /*
  * Copyright 2014 Google Inc.
  *
@@ -18,7 +18,7 @@
 /**
  * Holder of a Gitkit user account.
  */
-class Gitkit_Account {
+class Account {
   private $localId;
   private $email;
   private $providerId;
