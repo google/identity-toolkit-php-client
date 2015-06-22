@@ -369,7 +369,6 @@ class Gitkit_Client {
     return array(
         'email' => $param['email'],
         'userIp' => $user_ip,
-        'challenge' => $param['challenge'],
         'captchaResp' => $param['response'],
         'requestType' => 'PASSWORD_RESET');
   }
