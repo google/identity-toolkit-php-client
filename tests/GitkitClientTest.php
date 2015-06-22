@@ -99,7 +99,6 @@ class GitkitClientTest extends PHPUnit_Framework_TestCase {
     $oobReq = array(
         'action' => 'resetPassword',
         'email' => 'user@example.com',
-        'challenge' => 'what is the number',
         'response' => '100');
 
     $oobResult = $gitkitClient->getOobResults($oobReq, '1.1.1.1');
@@ -136,7 +135,6 @@ class GitkitClientTest extends PHPUnit_Framework_TestCase {
     $oobReq = array(
         'action' => 'resetPassword',
         'email' => 'user@example.com',
-        'challenge' => 'what is the number',
         'response' => '100');
 
     try {
