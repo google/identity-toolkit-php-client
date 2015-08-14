@@ -342,6 +342,8 @@ class Gitkit_Client {
       $user = array(
         'email' => $account->getEmail(),
         'localId' => $account->getUserId(),
+        'emailVerified' => $account->isEmailVerified(),
+        'displayName' => $account->getDisplayName(),
         'passwordHash' => Google_Utils::urlSafeB64Encode(
             $account->getPasswordHash()),
         'salt' => Google_Utils::urlSafeB64Encode($account->getSalt())
