@@ -107,6 +107,7 @@ class Gitkit_RpcHelper {
       'email' => $gitkitAccount->getEmail(),
       'localId' => $gitkitAccount->getUserId(),
       'displayName' => $gitkitAccount->getDisplayName(),
+      'emailVerified' => $gitkitAccount->isEmailVerified(),
       'photoUrl' => $gitkitAccount->getPhotoUrl()
     );
     return $this->invokeGitkitApiWithServiceAccount('setAccountInfo', $data);
