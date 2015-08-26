@@ -267,9 +267,10 @@ class Gitkit_Client {
    * @return array out-of-band results:
    * array(
    *   'email' => email of the user,
-   *   'newEmail' => new email (for ChangeEmail only)
-   *   'oobLink' => url for user click to finish the operation
-   *   'action' => 'RESET_PASSWORD', or 'CHANGE_EMAIL'
+   *   'oldEmail' => old email (for ChangeEmail only),
+   *   'newEmail' => new email (for ChangeEmail only),
+   *   'oobLink' => url for user click to finish the operation,
+   *   'action' => 'RESET_PASSWORD', or 'CHANGE_EMAIL',
    *   'response_body' => http response to be sent back to Gitkit widget
    * )
    */
@@ -394,7 +395,7 @@ class Gitkit_Client {
 
   private function emailChangeResponse($oob_link, $param) {
     return array(
-        'oldEmail' => $param['email'],
+        'oldEmail' => $param['oldEmail'],
         'newEmail' => $param['newEmail'],
         'oobLink' => $oob_link,
         'action' => 'CHANGE_EMAIL',
