@@ -68,7 +68,11 @@ class Gitkit_Account {
   public function getProviderId() {
     return $this->providerId;
   }
-
+  
+  public function getProviderInfo() {
+    return $this->providerInfo;
+  }
+  
   public function setProviderId($providerId) {
     $this->providerId = $providerId;
   }
