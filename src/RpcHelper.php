@@ -61,15 +61,15 @@ class Gitkit_RpcHelper {
     $certUrl = $this->gitkitApisUrl . 'publicKeys';
     if ($this->apiKey) {
       // try server-key first
-      $response = $this->oauth2Client->retrieveCertsFromLocation(
+      return $this->oauth2Client->retrieveCertsFromLocation(
           $certUrl . '?key=' . $this->apiKey);
     } else {
       // fallback to service account
       $httpRequest = new Google_Http_Request($certUrl);
       $response = $this->oauth2Client->authenticatedRequest($httpRequest)
           ->getResponseBody();
+      return json_decode($response);
     }
-    return json_decode($response);
   }
 
   /**
