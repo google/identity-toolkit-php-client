@@ -136,6 +136,12 @@ class Gitkit_Client {
           $user->setProviderId(null);
         }
         $user->setEmailVerified($jwt["verified"]);
+        if (isset($jwt["display_name"])) {
+          $user->setDisplayName($jwt["display_name"]);
+        }
+        if (isset($jwt["photo_url"])) {
+          $user->setPhotoUrl($jwt["photo_url"]);
+        }
         return $user;
       }
     }
