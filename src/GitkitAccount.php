@@ -41,6 +41,9 @@ class Gitkit_Account {
     if (isset($apiResponse['displayName'])) {
       $this->displayName = $apiResponse['displayName'];
     }
+    if (isset($apiResponse['photoUrl'])) {
+      $this->photoUrl = $apiResponse['photoUrl'];
+    }
     if (isset($apiResponse['emailVerified'])) {
       $this->emailVerified = $apiResponse['emailVerified'];
     }
@@ -69,14 +72,14 @@ class Gitkit_Account {
     return $this->providerId;
   }
   
+  public function setProviderId($providerId) {
+    $this->providerId = $providerId;
+  }
+  
   public function getProviderInfo() {
     return $this->providerInfo;
   }
   
-  public function setProviderId($providerId) {
-    $this->providerId = $providerId;
-  }
-
   public function getDisplayName() {
     return $this->displayName;
   }
