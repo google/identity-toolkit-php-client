@@ -29,6 +29,7 @@ class Gitkit_Client {
   private static $DEFAULT_COOKIE_NAME = 'gtoken';
   private $oauth2Client;
   private $clientId;
+  private $projectId;
   private $widgetUrl;
   private $cookieName;
   private $rpcHelper;
@@ -37,12 +38,14 @@ class Gitkit_Client {
    * Constructs the Gitkit client.
    *
    * @param string $clientId Google OAuth2 web client id
+   * @param string $projectId Google developer console project id
    * @param string $widgetUrl the url hosting the Gitkit widget
    * @param string $cookieName cookie name for Gitkit token
    * @param Gitkit_RpcHelper $rpcHelper the rpc helper
    */
-  public function __construct($clientId, $widgetUrl, $cookieName, $rpcHelper) {
+  public function __construct($clientId, $projectId, $widgetUrl, $cookieName, $rpcHelper) {
     $this->clientId = $clientId;
+    $this->projectId = $projectId;
     $this->widgetUrl = $widgetUrl;
     $this->cookieName = $cookieName;
     $this->oauth2Client = new Google_Auth_OAuth2(new Google_Client());
@@ -106,8 +109,12 @@ class Gitkit_Client {
           new Google_Auth_OAuth2(new Google_Client()),
           $serverApiKey);
     }
-    return new Gitkit_Client($config['clientId'], $config['widgetUrl'],
-        $cookieName, $rpcHelper);
+    $projectId = null;
+    if (isset($config['projectId'])) {
+      $projectId = $config['projectId'];
+    }
+    return new Gitkit_Client($config['clientId'], $projectId,
+        $config['widgetUrl'], $cookieName, $rpcHelper);
   }
 
   /**
@@ -119,12 +126,40 @@ class Gitkit_Client {
    */
   public function validateToken($gitToken) {
     if ($gitToken) {
-      $loginTicket = $this->oauth2Client->verifySignedJwtWithCerts(
-          $gitToken,
-          $this->getCerts(),
-          $this->clientId,
-          self::$GTIKIT_TOKEN_ISSUER,
-          180 * 86400)->getAttributes();
+      $isAudienceMatch = false;
+      if (!empty($this->projectId)) {
+        try {
+          $loginTicket = $this->oauth2Client->verifySignedJwtWithCerts(
+              $gitToken,
+              $this->getCerts(),
+              $this->projectId,
+              self::$GTIKIT_TOKEN_ISSUER,
+              180 * 86400)->getAttributes();
+          $isAudienceMatch = true;
+        } catch (Google_Auth_Exception $e) {
+          if (strpos($e->getMessage(), "Wrong recipient") !== 0) {
+            throw $e;
+          }
+        }
+      }
+      if (!$isAudienceMatch) {
+        try {
+          $loginTicket = $this->oauth2Client->verifySignedJwtWithCerts(
+              $gitToken,
+              $this->getCerts(),
+              $this->clientId,
+              self::$GTIKIT_TOKEN_ISSUER,
+              180 * 86400)->getAttributes();
+          $isAudienceMatch = true;
+        } catch (Google_Auth_Exception $e) {
+          if (strpos($e->getMessage(), "Wrong recipient") !== 0) {
+            throw $e;
+          }
+        }
+      }
+      if (!$isAudienceMatch) {
+        throw new Google_Auth_Exception("Wrong recipient in gtoken audience");
+      }
       $jwt = $loginTicket["payload"];
       if ($jwt) {
         $user = new Gitkit_Account();
