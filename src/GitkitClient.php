@@ -72,9 +72,8 @@ class Gitkit_Client {
    * @throws Gitkit_ClientException if required config is missing
    */
   public static function createFromConfig($config, $rpcHelper = null) {
-    if (!isset($config['clientId'])) {
-      throw new Gitkit_ClientException("\"clientId\" should be configured");
-    }
+    $clientId = $config['clientId'];
+    $projectId = $config['projectId'];
     if (!isset($config['widgetUrl'])) {
       throw new Gitkit_ClientException("\"widgetUrl\" should be configured");
     }
@@ -109,11 +108,7 @@ class Gitkit_Client {
           new Google_Auth_OAuth2(new Google_Client()),
           $serverApiKey);
     }
-    $projectId = null;
-    if (isset($config['projectId'])) {
-      $projectId = $config['projectId'];
-    }
-    return new Gitkit_Client($config['clientId'], $projectId,
+    return new Gitkit_Client($clientId, $projectId,
         $config['widgetUrl'], $cookieName, $rpcHelper);
   }
 
@@ -126,8 +121,8 @@ class Gitkit_Client {
    */
   public function validateToken($gitToken) {
     if ($gitToken) {
-      $isAudienceMatch = false;
-      if (!empty($this->projectId)) {
+      $loginTicket = null;
+      if (isset($this->projectId)) {
         try {
           $loginTicket = $this->oauth2Client->verifySignedJwtWithCerts(
               $gitToken,
@@ -135,14 +130,13 @@ class Gitkit_Client {
               $this->projectId,
               self::$GTIKIT_TOKEN_ISSUER,
               180 * 86400)->getAttributes();
-          $isAudienceMatch = true;
         } catch (Google_Auth_Exception $e) {
           if (strpos($e->getMessage(), "Wrong recipient") !== 0) {
             throw $e;
           }
         }
       }
-      if (!$isAudienceMatch) {
+      if (!isset($loginTicket) and isset($this->clientId)) {
         try {
           $loginTicket = $this->oauth2Client->verifySignedJwtWithCerts(
               $gitToken,
@@ -150,15 +144,15 @@ class Gitkit_Client {
               $this->clientId,
               self::$GTIKIT_TOKEN_ISSUER,
               180 * 86400)->getAttributes();
-          $isAudienceMatch = true;
         } catch (Google_Auth_Exception $e) {
           if (strpos($e->getMessage(), "Wrong recipient") !== 0) {
             throw $e;
           }
         }
       }
-      if (!$isAudienceMatch) {
-        throw new Google_Auth_Exception("Wrong recipient in gtoken audience");
+      if (!isset($loginTicket)) {
+        throw new Google_Auth_Exception(
+          "clientId or projectId in server config file may be wrong or missing.");
       }
       $jwt = $loginTicket["payload"];
       if ($jwt) {
