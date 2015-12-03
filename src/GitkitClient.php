@@ -74,6 +74,9 @@ class Gitkit_Client {
   public static function createFromConfig($config, $rpcHelper = null) {
     $clientId = $config['clientId'];
     $projectId = $config['projectId'];
+    if (!isset($clientId) && !isset($projectId)) {
+      throw new Gitkit_ClientException("Missing projectId or clientId in server configuration.");
+    }
     if (!isset($config['widgetUrl'])) {
       throw new Gitkit_ClientException("\"widgetUrl\" should be configured");
     }
@@ -131,7 +134,7 @@ class Gitkit_Client {
               self::$GTIKIT_TOKEN_ISSUER,
               180 * 86400)->getAttributes();
         } catch (Google_Auth_Exception $e) {
-          if (strpos($e->getMessage(), "Wrong recipient") !== 0) {
+          if (strpos($e->getMessage(), "Wrong recipient") === false) {
             throw $e;
           }
         }
@@ -145,14 +148,14 @@ class Gitkit_Client {
               self::$GTIKIT_TOKEN_ISSUER,
               180 * 86400)->getAttributes();
         } catch (Google_Auth_Exception $e) {
-          if (strpos($e->getMessage(), "Wrong recipient") !== 0) {
+          if (strpos($e->getMessage(), "Wrong recipient") === false) {
             throw $e;
           }
         }
       }
       if (!isset($loginTicket)) {
         throw new Google_Auth_Exception(
-          "clientId or projectId in server config file may be wrong or missing.");
+          "Gitkit token audience doesn't match projectId or clientId in server configuration.");
       }
       $jwt = $loginTicket["payload"];
       if ($jwt) {
