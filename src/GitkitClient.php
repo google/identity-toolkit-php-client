@@ -43,13 +43,13 @@ class Gitkit_Client {
    * @param string $cookieName cookie name for Gitkit token
    * @param Gitkit_RpcHelper $rpcHelper the rpc helper
    */
-  public function __construct($clientId, $projectId, $widgetUrl, $cookieName, $rpcHelper) {
+  public function __construct($clientId, $widgetUrl, $cookieName, $rpcHelper, $projectId) {
     $this->clientId = $clientId;
-    $this->projectId = $projectId;
     $this->widgetUrl = $widgetUrl;
     $this->cookieName = $cookieName;
     $this->oauth2Client = new Google_Auth_OAuth2(new Google_Client());
     $this->rpcHelper = $rpcHelper;
+    $this->projectId = $projectId;
   }
 
   /**
@@ -111,8 +111,8 @@ class Gitkit_Client {
           new Google_Auth_OAuth2(new Google_Client()),
           $serverApiKey);
     }
-    return new Gitkit_Client($clientId, $projectId,
-        $config['widgetUrl'], $cookieName, $rpcHelper);
+    return new Gitkit_Client($clientId, $config['widgetUrl'],
+        $cookieName, $rpcHelper, $projectId);
   }
 
   /**
@@ -125,28 +125,20 @@ class Gitkit_Client {
   public function validateToken($gitToken) {
     if ($gitToken) {
       $loginTicket = null;
-      if (isset($this->projectId)) {
+      $auds = array_filter(
+          array($this->projectId, $this->clientId),
+          function($x) {
+            return isset($x);
+          });
+      foreach ($auds as $aud) {
         try {
           $loginTicket = $this->oauth2Client->verifySignedJwtWithCerts(
               $gitToken,
               $this->getCerts(),
-              $this->projectId,
+              $aud,
               self::$GTIKIT_TOKEN_ISSUER,
               180 * 86400)->getAttributes();
-        } catch (Google_Auth_Exception $e) {
-          if (strpos($e->getMessage(), "Wrong recipient") === false) {
-            throw $e;
-          }
-        }
-      }
-      if (!isset($loginTicket) and isset($this->clientId)) {
-        try {
-          $loginTicket = $this->oauth2Client->verifySignedJwtWithCerts(
-              $gitToken,
-              $this->getCerts(),
-              $this->clientId,
-              self::$GTIKIT_TOKEN_ISSUER,
-              180 * 86400)->getAttributes();
+          break;
         } catch (Google_Auth_Exception $e) {
           if (strpos($e->getMessage(), "Wrong recipient") === false) {
             throw $e;
