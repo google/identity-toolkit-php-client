@@ -38,12 +38,12 @@ class Gitkit_Client {
    * Constructs the Gitkit client.
    *
    * @param string $clientId Google OAuth2 web client id
-   * @param string $projectId Google developer console project id
    * @param string $widgetUrl the url hosting the Gitkit widget
    * @param string $cookieName cookie name for Gitkit token
    * @param Gitkit_RpcHelper $rpcHelper the rpc helper
+   * @param string $projectId Google developer console project id
    */
-  public function __construct($clientId, $widgetUrl, $cookieName, $rpcHelper, $projectId) {
+  public function __construct($clientId, $widgetUrl, $cookieName, $rpcHelper, $projectId = null) {
     $this->clientId = $clientId;
     $this->widgetUrl = $widgetUrl;
     $this->cookieName = $cookieName;
