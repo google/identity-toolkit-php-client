@@ -29,6 +29,7 @@ class Gitkit_Client {
   private static $DEFAULT_COOKIE_NAME = 'gtoken';
   private $oauth2Client;
   private $clientId;
+  private $projectId;
   private $widgetUrl;
   private $cookieName;
   private $rpcHelper;
@@ -40,13 +41,15 @@ class Gitkit_Client {
    * @param string $widgetUrl the url hosting the Gitkit widget
    * @param string $cookieName cookie name for Gitkit token
    * @param Gitkit_RpcHelper $rpcHelper the rpc helper
+   * @param string $projectId Google developer console project id
    */
-  public function __construct($clientId, $widgetUrl, $cookieName, $rpcHelper) {
+  public function __construct($clientId, $widgetUrl, $cookieName, $rpcHelper, $projectId = null) {
     $this->clientId = $clientId;
     $this->widgetUrl = $widgetUrl;
     $this->cookieName = $cookieName;
     $this->oauth2Client = new Google_Auth_OAuth2(new Google_Client());
     $this->rpcHelper = $rpcHelper;
+    $this->projectId = $projectId;
   }
 
   /**
@@ -69,8 +72,10 @@ class Gitkit_Client {
    * @throws Gitkit_ClientException if required config is missing
    */
   public static function createFromConfig($config, $rpcHelper = null) {
-    if (!isset($config['clientId'])) {
-      throw new Gitkit_ClientException("\"clientId\" should be configured");
+    $clientId = $config['clientId'];
+    $projectId = $config['projectId'];
+    if (!isset($clientId) && !isset($projectId)) {
+      throw new Gitkit_ClientException("Missing projectId or clientId in server configuration.");
     }
     if (!isset($config['widgetUrl'])) {
       throw new Gitkit_ClientException("\"widgetUrl\" should be configured");
@@ -106,8 +111,8 @@ class Gitkit_Client {
           new Google_Auth_OAuth2(new Google_Client()),
           $serverApiKey);
     }
-    return new Gitkit_Client($config['clientId'], $config['widgetUrl'],
-        $cookieName, $rpcHelper);
+    return new Gitkit_Client($clientId, $config['widgetUrl'],
+        $cookieName, $rpcHelper, $projectId);
   }
 
   /**
@@ -119,12 +124,31 @@ class Gitkit_Client {
    */
   public function validateToken($gitToken) {
     if ($gitToken) {
-      $loginTicket = $this->oauth2Client->verifySignedJwtWithCerts(
-          $gitToken,
-          $this->getCerts(),
-          $this->clientId,
-          self::$GTIKIT_TOKEN_ISSUER,
-          180 * 86400)->getAttributes();
+      $loginTicket = null;
+      $auds = array_filter(
+          array($this->projectId, $this->clientId),
+          function($x) {
+            return isset($x);
+          });
+      foreach ($auds as $aud) {
+        try {
+          $loginTicket = $this->oauth2Client->verifySignedJwtWithCerts(
+              $gitToken,
+              $this->getCerts(),
+              $aud,
+              self::$GTIKIT_TOKEN_ISSUER,
+              180 * 86400)->getAttributes();
+          break;
+        } catch (Google_Auth_Exception $e) {
+          if (strpos($e->getMessage(), "Wrong recipient") === false) {
+            throw $e;
+          }
+        }
+      }
+      if (!isset($loginTicket)) {
+        throw new Google_Auth_Exception(
+          "Gitkit token audience doesn't match projectId or clientId in server configuration.");
+      }
       $jwt = $loginTicket["payload"];
       if ($jwt) {
         $user = new Gitkit_Account();
